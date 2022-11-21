@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Health Star Rating Calculator</title>
+    <style>
+        fieldset[disabled] {
+            display: none;
+        }
+
+        fieldset {
+            width: min(40vw, 600px);
+            margin-bottom: 20px;
+        }
+
+        h4 {
+            margin: 5px 0;
+        }
+
+        .refs {
+            font-size: 10pt
+        }
+
+        img {
+            width: min(100%, 400px);
+        }
+    </style>
+</head>
+
+<body onload="update()" style="padding-left: 30px;">
+    <h1>Health Star Rating Calculator</h1>
+    <p>Official HSR guide can be found <a
+            href="http://healthstarrating.gov.au/internet/healthstarrating/publishing.nsf/Content/guide-for-industry">here</a>.
+    </p>
+    <div style="width: fit-content;">
+        <div style="width: fit-content; float:inline-start;">
+            <form name="HSR" oninput="update()">
+                <fieldset onclick="refUpdate(1)">
+                    <legend>Step 1: Automatic Ratings</legend>
+                    <input type="radio" id="water" name="step1" value=1>
+                    <label for="water">Water</label><br>
+                    <input type="radio" id="flavorWater" name="step1" value=2>
+                    <label for="flavorWater">Flavored Water</label><br>
+                    <input type="radio" id="fruitVegetable" name="step1" value=3>
+                    <label for="fruitVegetable">Fruit or Vegetable</label><br>
+                    <input type="radio" id="other" name="step1" value=0>
+                    <label for="other">Other</label>
+                </fieldset>
+                <fieldset class="step1trig" onclick="refUpdate(2)">
+                    <legend>Step 2: Determine Category</legend>
+                    <input type="radio" id="c1" name="step2" value=0>
+                    <label for="c1">Category 1</label><br>
+                    <input type="radio" id="c1D" name="step2" value=1>
+                    <label for="c1D">Category 1D</label><br>
+                    <input type="radio" id="c2" name="step2" value=2>
+                    <label for="c2">Category 2</label><br>
+                    <input type="radio" id="c2D" name="step2" value=3>
+                    <label for="c2D">Category 2D</label><br>
+                    <input type="radio" id="c3" name="step2" value=4>
+                    <label for="c3">Category 3</label><br>
+                    <input type="radio" id="c1" name="step2" value=5>
+                    <label for="c3D">Category 3D</label><br>
+                </fieldset>
+                <fieldset class="step1trig" onclick="refUpdate(3)">
+                    <legend>Step 3: Determine Form</legend>
+                    <p>This step is not relevant to determining health star rating.</p>
+                </fieldset>
+                <fieldset class="step1trig" onclick="refUpdate(4)">
+                    <legend>Step 4: Calculate Baseline Points</legend>
+                    <table>
+                        <tr>
+                            <td>Energy (kJ)</td>
+                            <td><input type="number" id="Energy"></td>
+                            <td><span id="energytxt"></span></td>
+                        </tr>
+                        <tr class="step2trig">
+                            <td>Saturated Fat (g)</td>
+                            <td><input type="number" id="Saturated Fat"></td>
+                            <td><span id="satfattxt"></span></td>
+                        </tr>
+                        <tr>
+                            <td>Total Sugars (g)</td>
+                            <td><input type="number" id="Total Sugars"></td>
+                            <td><span id="sugartxt"></span></td>
+                        </tr>
+                        <tr class="step2trig">
+                            <td>Sodium (mg)</td>
+                            <td><input type="number" id="Sodium"></td>
+                            <td><span id="sodiumtxt"></span></td>
+                        </tr>
+                    </table>
+                    <p>*All measurements are per 100g or 100ml</p>
+                    <p><span id="s4out"></span></p>
+                </fieldset>
+                <fieldset class="step1trig" onclick="refUpdate(5)">
+                    <legend>Step 5: Calculate Modifying Points</legend>
+                    <h4>Fruit, Vegetable, Nut and Legume (V)</h4>
+                    <table>
+                        <tr class="step2trig">
+                            <td>% Concentrated FVNL</td>
+                            <td><input type="number" id="fvnl0"></td>
+                            <td><span id="fvnl0txt"></span></td>
+                        </tr>
+                        <tr class="step2trig">
+                            <td>% Non-Concentrated FVNL</td>
+                            <td><input type="number" id="fvnl1"></td>
+                            <td><span id="fvnl1txt"></span></td>
+                        </tr>
+                        <tr class="step2atrig">
+                            <td>% FVNL</td>
+                            <td><input type="number" id="fvnl2"></td>
+                            <td><span id="fvnl2txt"></span></td>
+                        </tr>
+                    </table>
+                    <p><span id="vpout"></span></p>
+                    <h4 id="step2pf">Protein (P) & Fibre (F)</h4>
+                    <table>
+                        <tr class="step2trig">
+                            <td>Protein (g)</td>
+                            <td><input type="number" id="protein"></td>
+                            <td><span id="proteintxt"></span></td>
+                        </tr>
+                        <tr class="step2alttrig">
+                            <td>Dietary Fibre(g)</td>
+                            <td><input type="number" id="fibre"></td>
+                            <td><span id="fibretxt"></span></td>
+                        </tr>
+                    </table>
+                    <p><span id="ppout"></span></p>
+                    <p><span id="fpout"></span></p>
+                    <p>*All measurements are per 100g or 100ml</p>
+                </fieldset>
+                <fieldset class="step1trig" onclick="refUpdate(6)">
+                    <legend>Step 6: Final Score</legend>
+                    <p><span id="finalScore"></span></p>
+                </fieldset>
+                <fieldset onclick="refUpdate(7)">
+                    <legend>Step 7: Assign Health Star Rating</legend>
+                    <p><span id="stars"></span></p>
+                </fieldset>
+            </form>
+        </div>
+        <div style="width: min(40vw,300px); float:inline-start; margin-left: 20px;">
+            <fieldset>
+                <legend>Relevant Section</legend>
+                <span class="refs" id="rs1" style="display: none;"></span>
+                <span class="refs" id="rs2" style="display: none;"></span>
+                <span class="refs" id="rs3" style="display: none;">
+                    <p>In most cases the HSR should be calculated and displayed on the basis of the product as it
+                        appears on the shelf (i.e. as sold). Specific exemptions apply for products which must be
+                        rehydrated, diluted or mixed with water, or drained of water or brine. The HSR for these
+                        products can be calculated on the basis of the product ‘as prepared’. If the HSR is based on
+                        product ‘as prepared’ according to one of these specific exemptions, the label should clearly
+                        specify the directions for that preparation</p>
+                    <p>Examples, but not an exhaustive list of these
+                        exemptions are:<br>• Rehydrated - dehydrated peas<br>• Diluted - condensed soups, cordial<br>•
+                        Mixed with water - powdered stock, powdered gravy, powdered soups, jelly crystals<br>• Drained
+                        of water - canned tuna<br>• Drained of brine - canned tuna, canned beans, canned
+                        vegetables</p>
+                    <p>For products that say on the label it should be drained before consumption (for
+                        example drained of oil or syrup), and do not meet the above exemption to be labelled ‘as
+                        prepared’, HSRs should be calculated based on the product as it appears on the shelf (i.e. as
+                        sold). For products with these label directions the NIP is calculated ‘as prepared’ (for example
+                        drained of oil or syrup)
+                        as required by Standard 1.2.8 of the Code. In these cases, the HSR would not be calculated using
+                        the the information in the NIP. For these products only Figure 5.4 (the HSR icon without
+                        nutrient icons) should be displayed. A statement to the effect of ‘HSR calculated undrained’
+                        should be included on packaging where space allows.</p>
+                </span>
+                <span class="refs" id="rs4" style="display: none;">
+                    <p>The appropriate method to determine the HSR baseline points is subject to the category of the
+                        product determined
+                        in Step 2 above; the nutrient content of the product scored is determined by the form of the
+                        product in Step 3.
+                        HSR baseline points are calculated for the prescribed nutrients plus energy, in 100g or 100mL of
+                        the product
+                        except for Category 1 where HSR baseline points are calculated for energy and total sugars only
+                    </p>
+                    <span class="tables4" id="t1">
+                        <p>Table 1: HSR baseline points for Category 1D, 2 and 2D products</p>
+                        <img src="s4v1.PNG">
+                    </span>
+                    <span class="tables4" id="t2">
+                        <p>Table 2: HSR baseline points for Category 3 and 3D Foods</p>
+                        <img src="s4v2.PNG">
+                    </span>
+                    <span class="tables4" id="t3">
+                        <p>Table 3: HSR baseline points for Category 1</p>
+                        <img src="s4v3.PNG">
+                    </span>
+                </span>
+                <span class="refs" id="rs5" style="display: none;">
+                    <span class="vpref" id="rs5.0">
+                        <p>
+                            HSR modifying points may be scored for the amount of fruits, vegetables, nuts and legumes
+                            (fvnl)
+                            (HSR V points) in a product. In some cases HSR modifying points may also be scored for the
+                            amount of protein and dietary fibre. Businesses are encouraged to list FVNL content as a
+                            percentage in the ingredients list or to keep records to substantiate FVNL claims to support
+                            transparency in the HSR system.
+                        </p>
+                    </span>
+                    <span class="vpref" id="rs5.1">
+                        <h4>Determining the HSR V points</h4>
+                        <p>The method for determining the HSR V points is the same as that detailed in Schedule 5,
+                            however
+                            for the purposes of the HSR system the HSR V points allocated have been expanded.</p>
+                        <p>HSR V points can be scored for fruits, vegetables, nuts and legumes (fvnl) including coconut,
+                            spices, herbs, fungi, seeds and algae content including:<br>• fvnl that are fresh, cooked,
+                            frozen, canned, pickled or preserved; and<br>• fvnl that have been peeled, diced or cut (or
+                            otherwise reduced in size), puréed or dried.<br>• fruit juice or vegetable juice as
+                            standardised
+                            in Standard 2.6.1 of the Code including concentrated juices and purées;<br>• coconut flesh
+                            (which is to be scored as a nut), whether juiced, dried or desiccated, but not processed
+                            coconut
+                            products such as coconut milk, coconut cream or coconut oil; and<br>• the water in the
+                            centre of
+                            the coconut.</p>
+                        <p>HSR V points cannot be scored for:<br>1) a constituent, extract or isolate of a food e.g.
+                            peanut
+                            oil, fruit pectin and de-ionised juice; or<br>2) cereal grains mentioned as a class of food
+                            in
+                            Schedule 22.</p>
+                        <p>HSR V points may be scored for:<br>Flours derived from vegetables and legumes are eligible to
+                            score HSR V points as per the HSR V points scoring criteria above. Vegetable flours score V
+                            points as concentrated fruit or vegetable and legume flours score HSR V points as a
+                            non-concentrated fvnl source.<br>For products that may be considered a cereal grain, but are
+                            not
+                            listed under Schedule 22 of the Code, and/or for products where it is not clear whether or
+                            not
+                            they would be classed as a fruit, vegetable, nut or legume for the purposes of scoring HSR V
+                            points, advice can be sought from the HSR Advisory Committee (through the FoPL Secretariat).
+                        </p>
+                        <p>Calculating HSR V points for ‘As sold’ versus ‘As consumed’ needs to consider:<br>The
+                            percentage
+                            of fvnl (including concentrated sources) in a product should be calculated in accordance
+                            with
+                            the appropriate method in Standard 1.2.10 of the Code - Characterising Ingredients and
+                            Components of Food - in the product as sold. The exception is when determining HSR V points
+                            for
+                            canned vegetables and legumes, where the percentage of fvnl should be calculated based on
+                            the
+                            products as it would be consumed (i.e. drained) and not the product as sold.<br>As a result
+                            of
+                            the above, the form of the fvnl in the product used to determine the percentage of
+                            non-concentrated fvnl / percentage concentrated fruits or vegetables will not always be the
+                            same
+                            as the form of the final product to which the HSR applies.<br>Establish the HSR V points (to
+                            a
+                            maximum of 8) in accordance with Table 4.</p>
+                        <span class="tables5" id="t4">
+                            <p>Table 4: HSR V points for Categories 1D, 2, 2D, 3 and 3D</p>
+                            <img src="s5.1v1.PNG">
+                            <p>Notes to Table 4<br>• Column 1 only applies if a product contains solely concentrated
+                                fruits
+                                or vegetables. Nuts and legumes are specifically excluded from the definition of fruit
+                                and
+                                vegetables and should be scored under Column 2 in all forms (fresh, dried, roasted
+                                etc.).<br>• Use Column 1 of Table 4 if the fruits or vegetables in the product are all
+                                concentrated (including dried), for example dried fruit or tomato paste.</p>
+                            <p>• Use Column 2 of Table 4 if:<br>1. There are no concentrated (or dried) fruits or
+                                vegetables
+                                in the product; or<br>2. The percentages of all concentrated ingredients are calculated
+                                based on the ingredient when reconstituted (according to Standard 1.2.10-4(3) and
+                                1.2.10-4(4) of the Code); or<br>3. The product contains a mixture of concentrated fruits
+                                or
+                                vegetables and non-concentrated fvnl sources (after following the formula given below);
+                                or<br>4. The product is potato crisps or similar low moisture vegetable product.</p>
+                            <p>Products that score ≥13 HSR baseline points are not permitted to score points for protein
+                                unless they score five or more HSR V points in Table 4 above.</p>
+                        </span>
+                        <span class="tables5" id="t5">
+                            <p>If the food product contains a mixture of concentrated fruits or vegetables and
+                                non-concentrated fvnl sources, the percentage of total fvnl must be worked out as
+                                follows:
+                            </p>
+                            <img src="s5.2.PNG">
+                            <p>where:<br><b>%non-concentrated fvnl/concentrated fruits or vegetables</b> means the
+                                percentage of <b>fvnl</b> in the food determined using the appropriate calculation
+                                methods.
+                            </p>
+                            <p>For the formula above, potato crisps and similar low moisture vegetable products are
+                                taken to
+                                be non-concentrated.</p>
+                            <p>Table 5: HSR V Points for Category 1</p>
+                            <img src="s5.3.PNG">
+                            <p>Notes to Table 5<br>• For the purpose of the HSR Calculator a product that is >99.5% fvnl
+                                counts as 100% fvnl where food additives or fortificants have been added e.g. pure fruit
+                                juice with added vitamin C.</p>
+                        </span>
+                    </span>
+                    <span class="vpref" id="rs5.2">
+                        <h4>Determining Health Star Rating P & F points</h4>
+                        <p>Table 6 gives HSR protein and fibre points, a maximum of 15 points can be awarded for each.
+                            The extension of points for protein and fibre is non-linear beyond the original 5 point cap
+                            of the NPSC to account for the wide range of these nutrient values and so that the points
+                            assigned are not distorted by very high protein and fibre values found in only a few
+                            products.</p>
+                        <p>The prescribed methods of analysis to determine total dietary fibre are outlined in Schedule
+                            11 of the Code.</p>
+                        <p>Table 6: HSR Protein (P) and Fibre (F) Points</p>
+                        <img src="s5.3.PNG">
+                    </span>
+                </span>
+                <span class="refs" id="rs6" style="display: none;">
+                    <p>The final HSR score is calculated by subtracting the HSR modifying points (HSR V, P and/or F
+                        points) from the HSR baseline points (see Tables 1 - 6 above). Calculate the final HSR score
+                        using the following formula:</p>
+                    <img src="s6.PNG">
+                </span>
+                <span class="refs" id="rs7" style="display: none;">
+                    <p>The HSR score is assigned a rating according to Table 7.<br>In this table find the HSR score in
+                        the correct category for the product, and identify the HSR shown in the left hand column:</p>
+                    <p>Table 7: HSR scores by category, with final Heath Star Rating</p>
+                    <img src="s7.PNG">
+                </span>
+            </fieldset>
+        </div>
+    </div>
+    <script>
+        function disableFieldsetByClass(cl, trig) {
+            let fields = document.getElementsByClassName(cl);
+            for (let i = 0; i < fields.length; i++) fields[i].disabled = trig;
+        }
+
+        function disableRowbyClass(cl, trig) {
+            let rows = document.getElementsByClassName(cl);
+            for (let i = 0; i < rows.length; i++) rows[i].style.display = trig ? 'table-row' : 'none';
+        }
+
+        function update() {
+            s1();
+        }
+
+        function refUpdate(sn) {
+            disableRowbyClass("refs", false);
+            document.getElementById("rs" + sn.toString()).style.display = 'block';
+            if (sn == 4) {
+                disableRowbyClass("tables4", false);
+                if (cat) {
+                    // Category 1D,2,2D
+                    if (cat < 4) document.getElementById("t1").style.display = 'block';
+                    // Category 3,3D
+                    else document.getElementById("t2").style.display = 'block';
+                    // Category 1
+                } else document.getElementById("t3").style.display = 'block';
+            }
+            if (sn == 5) {
+                disableRowbyClass("tables5", false);
+                // Category 1D,2,2D
+                if (cat) {
+                    document.getElementById("t4").style.display = 'block';
+                    document.getElementById("rs5.2").style.display = 'block';
+                }
+                // Category 1
+                else {
+                    document.getElementById("t5").style.display = 'block';
+                    document.getElementById("rs5.2").style.display = 'none';
+                }
+            }
+        }
+        // Automatic Ratings
+        function s1() {
+            let ref = ["",
+                "<h4>Plain Water</h4><p>Packaged water as defined in Standard 2.6.2 of the Code (which sets out composition and chemical limits for packaged water).</p>",
+                "<h4>Unsweetened flavoured water</h4><p>Unsweetened flavoured waters, as per the following definition:<br>Packaged beverages similar in nutritional profile to water that may contain only:<br>o carbon dioxide, whether added or naturally occurring;<br>o permitted flavouring substances (as defined by Standard 1.1.2-2 of the Code)<br>o mineral salts at Good Manufacturing Practice (GMP) (Schedule 16 of the Code)<br>o additives that provide a specific safety or stability function at GMP (Schedule 16 of the Code)and must not contain:<br>o added sugars, sweeteners, colours, sodium, caffeine, quinine, or any other ingredient that contains energy and is not expressly permitted above (e.g. protein).</p>",
+                "<h4>Fresh and minimally processed fruit and vegetables</h4><p>Fresh (unprocessed) and minimally processed fruit and vegetables, as per the following definition:<br>All whole fresh fruit (except coconut) and vegetables, fungi and legumes (except peanuts) as sold with no processing, plus these same products that have only been peeled, cut and/or surface treated and/or blanched and/or frozen (not dried), or canned without the addition of fat, sugars/sweeteners or salt.</p><p>The above definition excludes canned fruit and vegetables in juice and brine. The addition of these liquids provides an additional source of sugar and/or salt which should be reflected in its HSR and is not be permitted under the definition of minimally processed fruit and vegetables.<br>Fresh fruit and vegetables do not require packaging to be eligible for a HSR of 5, and businesses are encouraged to avoid packaging unprocessed fruit and vegetables unless it is necessary.<br>For fruit and vegetables not sold in packaging, businesses may choose to display the HSR as the 5-star icon and/or words to the effect that fresh fruit and vegetables a HSR of 5 stars.<br>For example, this could occur in any of the following ways:<br>o Banners or floor stickers at the entry to or in the fresh food section.<br>o HSR stickers or shelf wobblers near the price tags/stickers for individual fresh fruit or vegetables.<br>o Statements on businesses websites.<br>o Posters displayed at checkouts.<br>o Posters on/in shopping trolleys and baskets.<br>o Any further marketing activities that businesses deem suitable to promote the automatic HSR of 5 stars for fresh and minimally processed fruit and vegetables.</p>"
+            ]
+
+            let s1 = parseInt(document.forms.HSR.elements.step1.value);
+
+            document.getElementById("rs1").innerHTML = ref[s1];
+            disableFieldsetByClass("step1trig", s1);
+            switch (s1) {
+                case 1:
+                    document.getElementById("stars").innerHTML = "5 Stars";
+                    break;
+                case 2:
+                    document.getElementById("stars").innerHTML = "4.5 Stars";
+                    break;
+                case 3:
+                    document.getElementById("stars").innerHTML = "5 Stars";
+                    break;
+                default:
+                    document.getElementById("stars").innerHTML = "";
+                    s2();
+                    s4();
+                    s5();
+                    s6();
+                    s7();
+            }
+        }
+        // Category
+        var cat = null;
+
+        function s2() {
+            let ref = [
+                "<h4>Category 1</h4><p>Non-dairy beverages, jellies and water-based ice confections (excluding Category 1D beverages)</p>",
+                "<h4>Category 1D</h4><p>Milk (defined in Standard 2.5.1 of the Code) and dairy beverages (including dairy alternative beverages) that meet specified dairy criteria</p><p>• milk and dairy beverages with ≥ 80 mg calcium/serve (this equates to sufficient calcium to meet the requirements for a ‘source of calcium’ claim under Standard 1.2.7 of the Code. A reference serve of 200mL is given in Schedule 17).<br>• milk and dairy beverage alternatives derived from legumes that contain no less than 3% m/m protein derived from legumes and have ≥100mg calcium per 100mL4.<br>• milk and dairy beverage alternatives derived from cereals, nuts, seeds, or a combination of those ingredients that contain no less than 0.3% m/m protein derived from cereals, nuts, seeds, or a combination of those ingredients, and have ≥100mg calcium per 100mL.<br>• milk, dairy beverages, and milk and dairy beverage alternatives, must contain ≥75% dairy or permitted dairy-alternative ingredients (refer example below).</p>",
+                "<h4>Category 2</h4><p>All foods (other than those included in Category 1, 1D, 2D, 3 or 3D)</p>",
+                "<h4>Category 2D</h4><p>Dairy foods (other than those included in Category 1D or 3D) with ≥75% dairy or permitted dairy alternative content.</p><p>• all dairy foods not included in HSR Categories 1D or 3D, including cheeses with a calcium level ≤320 mg/100 g (e.g. ricotta, cottage cheese, cream cheese), yoghurt, fermented milk products, cream, dairy desserts and other chilled (but not frozen) dairy products.<br>• cheese alternatives derived from legumes that contain no less than 15% m/m protein derived from legumes and have a calcium level of ≤320 mg/100 g.<br>• yoghurt dairy dessert alternatives derived from legumes that contain no less than 3.1% m/m protein derived from legumes.<br>• dairy foods and alternatives must contain ≥75% dairy or permitted dairy-alternative ingredients (refer example below).</p><p>This category does not include ice cream or alternatives derived from cereals, nuts or seeds. These products fall in Category 2.</p>",
+                "<h4>Category 3</h4><p>Oils and spreads, defined as follows<br>1.1.1.edible oil as defined in Standard 2.4.1 of the Code<br>1.1.2.edible oil spreads as defined in Standard 2.4.2 of the Code<br>1.1.3.margarine as defined in Standard 2.4.2 of the Code<br>1.1.4.butter as defined in Standard 2.5.5 of the Code</p>",
+                "<h4>Category 3D</h4><p>Cheese (including surface ripened cheese) and processed cheese as defined in Standard 2.5.4 of the Code (with calcium content >320 mg/100 g).</p><p>• cheese (including surface ripened cheeses) and processed cheese, as defined in Standard 2.5.4 of the Code, with a calcium content > 320 mg/100 g. Must consist of >75% dairy ingredients.<br>• cheese alternatives derived from legumes that contain no less than 15% m/m protein derived from legumes and have a calcium content > 320 mg/100 g and contain >75% permitted dairy-alternative ingredients (refer example below).</p>"
+            ]
+            cat = parseInt(document.forms.HSR.elements.step2.value);
+            document.getElementById("rs2").innerHTML = ref[cat];
+            // Edit Step 4 & 5
+            disableRowbyClass("step2trig", cat);
+            disableRowbyClass("step2atrig", !cat);
+            disableRowbyClass("step2alttrig", cat > 1);
+            switch (cat) {
+                case 0:
+                    document.getElementById("step2pf").innerHTML = "";
+                    break;
+                case 1:
+                    document.getElementById("step2pf").innerHTML = "Protein (P)";
+                    break;
+                default:
+                    document.getElementById("step2pf").innerHTML = "Protein (P) & Fibre (F)";
+                    break;
+            }
+            // Clear Output
+            document.getElementById("stars").innerHTML = "";
+        }
+        var baseline = 0;
+
+        function s4() {
+            // Reset Text
+            document.getElementById("energytxt").innerHTML = "";
+            document.getElementById("satfattxt").innerHTML = "";
+            document.getElementById("sugartxt").innerHTML = "";
+            document.getElementById("sodiumtxt").innerHTML = "";
+
+            let energy = parseFloat(document.getElementById("Energy").value);
+            let satfat = parseFloat(document.getElementById("Saturated Fat").value);
+            let sugar = parseFloat(document.getElementById("Total Sugars").value);
+            let sodium = parseFloat(document.getElementById("Sodium").value);
+
+            // Max cap on weights per 100g
+            if (satfat > 100) document.getElementById("Saturated Fat").value = 100;
+            if (sugar > 100) document.getElementById("Total Sugars").value = 100;
+            if (sodium > 100000) document.getElementById("Sodium").value = 100000;
+
+            let energyList = [
+                [0, 335, 670, 1005, 1340, 1675, 2010, 2345, 2680, 3015, 3350, 3685],
+                [0, 31, 61, 91, 121, 151, 181, 211, 241, 271]
+            ]; // Others, Category 1
+            let satfatList = [
+                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11.2, 12.5, 13.9, 15.5, 17.3, 19.3, 21.6, 24.1, 26.9, 30, 33.5,
+                    37.4, 41.7, 46.6, 52, 58, 64.7, 72.3, 80.6, 90
+                ],
+                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+                    27, 28, 29, 30
+                ]
+            ]; // Others, Category 1
+            let sugarList = [
+                [0, 5, 8.9, 12.8, 16.8, 20.7, 24.6, 28.5, 32.4, 36.3, 40.3, 44.2, 48.1, 52, 55.9, 59.8, 63.8, 67.7,
+                    71.6, 75.5, 79.4, 83.3, 87.3, 91.2, 95.1, 99
+                ],
+                [0, 5, 9, 13.5, 18, 22.5, 27, 31, 36, 40, 45],
+                [0, .1, 1.6, 3.1, 4.6, 6.1, 7.6, 9.1, 10.6, 12.1, 13.6]
+            ]; // Category [1D, 2, 2D], Category [3, 3D], Category 1
+            let sodiumList = [0, 90, 180, 270, 360, 450, 540, 630, 720, 810, 900, 990, 1080, 1170, 1260, 1350, 1440,
+                1530, 1620, 1710, 1800, 1890, 1980, 2070, 2160, 2250, 2340, 2430, 2520, 2610, 2700
+            ]; // All
+
+            baseline = 0;
+
+            if (cat) {
+                // Energy for both Category 1D, 2, 2D and 3, 3D
+                for (var i = energyList[0].length; i >= 0; i--)
+                    if (energy > energyList[0][i]) {
+                        baseline += i;
+                        document.getElementById("energytxt").innerHTML = " +" + i.toString() + "pts";
+                        break;
+                    }
+                // Satfat for Category 1D, 2, 2D or 3, 3D
+                for (var i = satfatList[0 + (cat > 3)].length; i >= 0; i--)
+                    if (satfat > satfatList[0 + (cat > 3)][i]) {
+                        baseline += i;
+                        document.getElementById("satfattxt").innerHTML = " +" + i.toString() + "pts";
+                        break;
+                    }
+                // Sugar for Category 1D, 2, 2D or 3, 3D
+                for (var i = sugarList[0 + (cat > 3)].length; i >= 0; i--)
+                    if (sugar > sugarList[0 + (cat > 3)][i]) {
+                        baseline += i;
+                        document.getElementById("sugartxt").innerHTML = " +" + i.toString() + "pts";
+                        break;
+                    }
+                // Sodium for both Category 1D, 2, 2D and 3, 3D
+                for (var i = sodiumList.length; i >= 0; i--)
+                    if (sodium > sodiumList[i]) {
+                        baseline += i;
+                        document.getElementById("sodiumtxt").innerHTML = " +" + i.toString() + "pts";
+                        break;
+                    }
+            } else { // Category 1
+                // Energy
+                for (var i = energyList[1].length; i >= 0; i--)
+                    if (energy > energyList[1][i]) {
+                        baseline += i + 1;
+                        document.getElementById("energytxt").innerHTML = " +" + (i + 1).toString() + "pts";
+                        break;
+                    }
+                // Sugar                    
+                for (var i = sugarList[2].length; i >= 0; i--)
+                    if (sugar > sugarList[2][i]) {
+                        baseline += i;
+                        document.getElementById("sugartxt").innerHTML = " +" + i.toString() + "pts";
+                        break;
+                    }
+            }
+            document.getElementById("s4out").innerHTML = "Baseline Point Total: " + baseline.toString();
+        }
+        var vPoints = 0;
+        var pPoints = 0;
+        var fPoints = 0;
+
+        function s5() {
+            // Reset text
+            document.getElementById("vpout").innerHTML = "";
+            document.getElementById("ppout").innerHTML = "";
+            document.getElementById("fpout").innerHTML = "";
+            document.getElementById("fvnl0txt").innerHTML = "";
+            document.getElementById("fvnl1txt").innerHTML = "";
+            document.getElementById("fvnl2txt").innerHTML = "";
+            document.getElementById("proteintxt").innerHTML = "";
+            document.getElementById("fibretxt").innerHTML = "";
+
+            let fvnl0 = parseFloat(document.getElementById("fvnl0").value);
+            let fvnl1 = parseFloat(document.getElementById("fvnl1").value);
+            let fvnl2 = parseFloat(document.getElementById("fvnl2").value);
+            let protein = parseFloat(document.getElementById("protein").value);
+            let fibre = parseFloat(document.getElementById("fibre").value);
+
+            // Max cap on percentage
+            if (fvnl0 > 100) document.getElementById("fvnl0").value = 100;
+            if (fvnl1 > 100) document.getElementById("fvnl1").value = 100;
+            if (fvnl2 > 100) document.getElementById("fvnl2").value = 100;
+
+            let fvnlconc = [0, 25, 43, 52, 63, 67, 80, 90, 99.5];
+            let fvnlnonc = [0, 40, 60, 67, 75, 80, 90, 95, 99.5];
+            let fvnlperc = [0, 25, 33, 41, 49, 57, 65, 73, 81, 89, 96];
+            let proteinL = [0, 1.6, 3.2, 4.8, 6.4, 8, 9.6, 11.6, 13.9, 16.7, 20, 24, 28.9, 34.7, 41.6, 50];
+            let fibreL = [0, .9, 1.9, 2.8, 3.7, 4.7, 5.4, 6.3, 7.3, 8.4, 9.7, 11.2, 13, 15, 17.3, 20];
+
+            vPoints = 0;
+            pPoints = 0;
+            fPoints = 0;
+
+            if (cat) { // Categories 1D,2,2D,3,3D
+                // Concentrated FVNL
+                for (var i = fvnlconc.length; i >= 0; i--)
+                    if (fvnl0 > fvnlconc[i]) {
+                        vPoints += i;
+                        document.getElementById("fvnl0txt").innerHTML = " +" + i.toString() + "pts";
+                        break;
+                    }
+                for (var i = fvnlnonc.length; i >= 0; i--)
+                    if (fvnl1 > fvnlnonc[i]) {
+                        vPoints += i;
+                        document.getElementById("fvnl1txt").innerHTML = " +" + i.toString() + "pts";
+                        break;
+                    }
+                document.getElementById("vpout").innerHTML = "V Point Total: " + vPoints;
+                // Protein
+                for (var i = proteinL.length; i >= 0; i--)
+                    if (protein > proteinL[i]) {
+                        if (baseline >= 13)
+                            if (i < 5) i = 0;
+                        pPoints = i;
+                        document.getElementById("proteintxt").innerHTML = " +" + i.toString() + "pts";
+                        break;
+                    }
+                document.getElementById("ppout").innerHTML = "P Point Total: " + pPoints;
+                // Fibre for Categories 2,2D,3,3D
+                if (cat > 1) {
+                    for (var i = fibreL.length; i >= 0; i--)
+                        if (fibre > fibreL[i]) {
+                            fPoints = i;
+                            document.getElementById("fibretxt").innerHTML = " +" + i.toString() + "pts";
+                            break;
+                        }
+                    document.getElementById("fpout").innerHTML = "F Point Total: " + fPoints;
+                }
+            } else { // Category 1
+                for (var i = fvnlperc.length; i >= 0; i--)
+                    if (fvnl2 > fvnlperc[i]) {
+                        vPoints = i;
+                        document.getElementById("fvnl2txt").innerHTML = " +" + i.toString() + "pts";
+                        break;
+                    }
+            }
+        }
+        var fs = 0;
+
+        function s6() {
+            let outStr = baseline.toString() + " (baseline)";
+            outStr += vPoints ? " - " + vPoints + " (v pts)" : "";
+            outStr += pPoints ? " - " + pPoints + " (p pts)" : "";
+            outStr += fPoints ? " - " + fPoints + " (f pts)" : "";
+            fs = baseline - vPoints - pPoints - fPoints;
+            outStr += " = " + fs.toString() + " points";
+            document.getElementById("finalScore").innerHTML = outStr;
+        }
+
+        function s7() {
+            let hsrRating = [
+                [1, 2, 4, 6, 8, 10, 12],
+                [-1, 0, 1, 2, 3, 4, 5, 6, 7],
+                [-10, -6, -1, 3, 7, 12, 16, 21, 25],
+                [-1, 1, 3, 4, 6, 8, 9, 11, 13],
+                [14, 17, 21, 24, 28, 31, 35, 38, 42],
+                [25, 27, 29, 31, 32, 34, 36, 38, 40]
+            ];
+            for (var i = 0; i < hsrRating[cat].length; i++)
+                if (fs < hsrRating[cat][i]) {
+                    let cfs = hsrRating[cat][i];
+                    if (!cat) i += 2;
+                    let stars = 5 - .5 * i;
+                    if (stars > 5) stars = 5;
+                    console.log("c=" + cat.toString() + " fs=" + fs.toString() + " cfs=" + cfs.toString() + " i=" + i
+                        .toString() + " s=" +
+                        stars.toString());
+                    document.getElementById("stars").innerHTML = stars.toString() + " Stars";
+                    return;
+                }
+            // If score is higher than the maximum, it is rated 0.5 stars
+            console.log("c=" + cat.toString() + " fs=" + fs.toString() + " overmax" + " s=0.5");
+            document.getElementById("stars").innerHTML = "0.5 Stars";
+        }
+    </script>
+</body>
+
+</html>
