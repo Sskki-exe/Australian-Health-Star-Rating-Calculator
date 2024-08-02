@@ -24,10 +24,14 @@
         img {
             width: min(100%, 400px);
         }
+        .min-width-span {
+            display: inline-block;
+            min-width: 30px;
+        }
     </style>
 </head>
 
-<body onload="update()" style="padding-left: 30px;">
+<body onload="update()" style="padding-left: 30px;font-family: Helvetica;">
     <h1>Health Star Rating Calculator</h1>
     <p>Official HSR guide can be found <a
             href="http://healthstarrating.gov.au/internet/healthstarrating/publishing.nsf/Content/guide-for-industry">here</a>.
@@ -49,17 +53,17 @@
                 <fieldset class="step1trig" onclick="refUpdate(2)">
                     <legend>Step 2: Determine Category</legend>
                     <input type="radio" id="c1" name="step2" value=0>
-                    <label for="c1">Category 1</label><br>
+                    <label for="c1"><span class="min-width-span">1 </span> (Beverages)</label><br>
                     <input type="radio" id="c1D" name="step2" value=1>
-                    <label for="c1D">Category 1D</label><br>
+                    <label for="c1D"><span class="min-width-span">1D</span> (Dairy Beverages)</label><br>
                     <input type="radio" id="c2" name="step2" value=2>
-                    <label for="c2">Category 2</label><br>
+                    <label for="c2"><span class="min-width-span">2 </span> (Other)</label><br>
                     <input type="radio" id="c2D" name="step2" value=3>
-                    <label for="c2D">Category 2D</label><br>
+                    <label for="c2D"><span class="min-width-span">2D</span> (Dairy Foods)</label><br>
                     <input type="radio" id="c3" name="step2" value=4>
-                    <label for="c3">Category 3</label><br>
+                    <label for="c3"><span class="min-width-span">3 </span> (Oils and Spreads)</label><br>
                     <input type="radio" id="c1" name="step2" value=5>
-                    <label for="c3D">Category 3D</label><br>
+                    <label for="c3D"><span class="min-width-span">3D</span> (Cheese)</label><br>
                 </fieldset>
                 <fieldset class="step1trig" onclick="refUpdate(3)">
                     <legend>Step 3: Determine Form</legend>
@@ -178,15 +182,15 @@
                     </p>
                     <span class="tables4" id="t1">
                         <p>Table 1: HSR baseline points for Category 1D, 2 and 2D products</p>
-                        <img src="s4v1.PNG">
+                        <img src="images/s4v1.PNG">
                     </span>
                     <span class="tables4" id="t2">
                         <p>Table 2: HSR baseline points for Category 3 and 3D Foods</p>
-                        <img src="s4v2.PNG">
+                        <img src="images/s4v2.PNG">
                     </span>
                     <span class="tables4" id="t3">
                         <p>Table 3: HSR baseline points for Category 1</p>
-                        <img src="s4v3.PNG">
+                        <img src="images/s4v3.PNG">
                     </span>
                 </span>
                 <span class="refs" id="rs5" style="display: none;">
@@ -250,7 +254,7 @@
                             maximum of 8) in accordance with Table 4.</p>
                         <span class="tables5" id="t4">
                             <p>Table 4: HSR V points for Categories 1D, 2, 2D, 3 and 3D</p>
-                            <img src="s5.1v1.PNG">
+                            <img src="images/s5.1v1.PNG">
                             <p>Notes to Table 4<br>• Column 1 only applies if a product contains solely concentrated
                                 fruits
                                 or vegetables. Nuts and legumes are specifically excluded from the definition of fruit
@@ -274,7 +278,7 @@
                                 non-concentrated fvnl sources, the percentage of total fvnl must be worked out as
                                 follows:
                             </p>
-                            <img src="s5.2.PNG">
+                            <img src="images/s5.2.PNG">
                             <p>where:<br><b>%non-concentrated fvnl/concentrated fruits or vegetables</b> means the
                                 percentage of <b>fvnl</b> in the food determined using the appropriate calculation
                                 methods.
@@ -283,7 +287,7 @@
                                 taken to
                                 be non-concentrated.</p>
                             <p>Table 5: HSR V Points for Category 1</p>
-                            <img src="s5.3.PNG">
+                            <img src="images/s5.3.PNG">
                             <p>Notes to Table 5<br>• For the purpose of the HSR Calculator a product that is >99.5% fvnl
                                 counts as 100% fvnl where food additives or fortificants have been added e.g. pure fruit
                                 juice with added vitamin C.</p>
@@ -299,20 +303,20 @@
                         <p>The prescribed methods of analysis to determine total dietary fibre are outlined in Schedule
                             11 of the Code.</p>
                         <p>Table 6: HSR Protein (P) and Fibre (F) Points</p>
-                        <img src="s5.3.PNG">
+                        <img src="images/s5.3.PNG">
                     </span>
                 </span>
                 <span class="refs" id="rs6" style="display: none;">
                     <p>The final HSR score is calculated by subtracting the HSR modifying points (HSR V, P and/or F
                         points) from the HSR baseline points (see Tables 1 - 6 above). Calculate the final HSR score
                         using the following formula:</p>
-                    <img src="s6.PNG">
+                    <img src="images/s6.PNG">
                 </span>
                 <span class="refs" id="rs7" style="display: none;">
                     <p>The HSR score is assigned a rating according to Table 7.<br>In this table find the HSR score in
                         the correct category for the product, and identify the HSR shown in the left hand column:</p>
                     <p>Table 7: HSR scores by category, with final Heath Star Rating</p>
-                    <img src="s7.PNG">
+                    <img src="images/s7.PNG">
                 </span>
             </fieldset>
         </div>
